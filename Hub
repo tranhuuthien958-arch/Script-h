@@ -1,0 +1,70 @@
+--[[
+Script Hub Roblox
+Các chức năng: Fly, F3X, Hitbox, Infinite Yield (basic), Ban Hammer (basic)
+Chú ý: Đây là phiên bản minh họa, bạn có thể mở rộng từng tính năng
+--]]
+
+local Players = game:GetService("Players")
+local lp = Players.LocalPlayer
+local mouse = lp:GetMouse()
+
+-- GUI
+local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
+ScreenGui.Name = "ScriptHub"
+
+local function createButton(name, posY, callback)
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(0, 150, 0, 40)
+    button.Position = UDim2.new(0, 10, 0, posY)
+    button.Text = name
+    button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.Parent = ScreenGui
+    button.MouseButton1Click:Connect(callback)
+end
+
+-- Fly
+local flyEnabled = false
+createButton("Fly", 10, function()
+    flyEnabled = not flyEnabled
+    if flyEnabled then
+        local bodyVelocity = Instance.new("BodyVelocity")
+        bodyVelocity.Velocity = Vector3.new(0,0,0)
+        bodyVelocity.MaxForce = Vector3.new(1e5,1e5,1e5)
+        bodyVelocity.Parent = lp.Character.HumanoidRootPart
+        while flyEnabled do
+            wait()
+            local cam = workspace.CurrentCamera
+            bodyVelocity.Velocity = cam.CFrame.LookVector * 50
+        end
+        bodyVelocity:Destroy()
+    end
+end)
+
+-- F3X (Basic: increase jump power)
+createButton("F3X (Jump Boost)", 60, function()
+    lp.Character.Humanoid.JumpPower = 200
+end)
+
+-- Hitbox (expand hitbox size)
+createButton("Hitbox Expand", 110, function()
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= lp and player.Character and player.Character:FindFirstChild("Head") then
+            player.Character.Head.Size = Vector3.new(10,10,10)
+        end
+    end
+end)
+
+-- Infinite Yield (Basic: simple command)
+createButton("Infinite Yield (Basic)", 160, function()
+    print("Commands like :kick, :respawn, :fly can be implemented here")
+end)
+
+-- Ban Hammer (Basic: kick player)
+createButton("Ban Hammer", 210, function()
+    local targetName = mouse.Target and mouse.Target.Parent.Name
+    local target = Players:FindFirstChild(targetName)
+    if target then
+        target:Kick("Banned by RealblueYT Hub")
+    end
+end)
